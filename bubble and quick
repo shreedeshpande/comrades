@@ -1,84 +1,97 @@
-#include <iostream>
-#include <string>
-#include <algorithm> // Include the algorithm header for the swap function
+/*Consider a student database of SEIT class (at least 15 records). Database contains
+different fields of every student like Roll No, Name and SGPA.(array of structure)
+a) Design a roll call list, arrange list of students according to roll numbers in
+ascending order (Use Bubble Sort)
+b) Arrange list of students to find out first ten toppers from a class. (Use Quick
+sort)*/
 
+#include <iostream>
 using namespace std;
 
-// Define the structure for a student
 struct Student {
     int rollNo;
-    string name;
+    char name[50];
     float sgpa;
 };
 
-// Function to perform Bubble Sort on the student records based on roll numbers
-void bubbleSort(Student students[], int n) {
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = 0; j < n - i - 1; j++) {
-            if (students[j].rollNo > students[j + 1].rollNo) {
-                // Swap the students if they are out of order
-                swap(students[j], students[j + 1]);
-            }
-        }
-    }
-}
+int partition(Student arr[], int low, int high);
 
-// Function to perform Quick Sort on the student records based on SGPA
-void quickSort(Student students[], int low, int high) {
-    if (low < high) {
-        // Partition the array and get the pivot index
-        int pivotIndex = partition(students, low, high);
+void quickSort(Student arr[], int low, int high);
 
-        // Recursively sort the subarrays
-        quickSort(students, low, pivotIndex - 1);
-        quickSort(students, pivotIndex + 1, high);
-    }
-}
-
-// Function to partition the array for Quick Sort
-int partition(Student students[], int low, int high) {
-    float pivot = students[high].sgpa;
-    int i = low - 1;
-
-    for (int j = low; j < high; j++) {
-        if (students[j].sgpa >= pivot) {
-            i++;
-            // Swap the students if they are out of order
-            swap(students[i], students[j]);
-        }
-    }
-
-    // Swap the pivot element with the element at (i + 1)
-    swap(students[i + 1], students[high]);
-    return i + 1;
-}
+void searchBySGPA(Student arr[], int n, float targetSGPA);
 
 int main() {
-    const int numStudents = 15;
-
-    // Initialize an array of student records
-    Student students[numStudents] = {
-        {103, "Alice", 8.5},
-        {101, "Bob", 7.8},
-        {105, "Charlie", 9.2},
-        // Add more records...
+    // Example data with at least 15 records
+    Student students[] = {
+        {101, "Alice", 8.5},
+        {102, "Bob", 9.0},
+        {103, "Charlie", 8.5},
+        {104, "David", 9.0},
+        // Add more records here
+        {115, "Eve", 7.8}
     };
 
-    // Part (a): Sort the students based on roll numbers using Bubble Sort
-    bubbleSort(students, numStudents);
+    int n = sizeof(students) / sizeof(students[0]);
 
-    cout << "Roll Call List (Sorted by Roll Numbers):\n";
-    for (int i = 0; i < numStudents; i++) {
-        cout << "Roll No: " << students[i].rollNo << ", Name: " << students[i].name << ", SGPA: " << students[i].sgpa << endl;
-    }
+    float targetSGPA = 8.5;
+    searchBySGPA(students, n, targetSGPA);
 
-    // Part (b): Sort the students based on SGPA using Quick Sort
-    quickSort(students, 0, numStudents - 1);
+    quickSort(students, 0, n - 1);
 
-    cout << "\nTop Ten Toppers:\n";
-    for (int i = 0; i < min(10, numStudents); i++) {
+    cout << "\nTop 10 Toppers (Sorted by SGPA):\n";
+    for (int i = 0; i < 10 && i < n; i++) {
         cout << "Roll No: " << students[i].rollNo << ", Name: " << students[i].name << ", SGPA: " << students[i].sgpa << endl;
     }
 
     return 0;
+}
+
+int partition(Student arr[], int low, int high) {
+    float pivot = arr[high].sgpa;
+    int i = (low - 1);
+
+    for (int j = low; j <= high - 1; j++) {
+        if (arr[j].sgpa >= pivot) {
+            swap(arr[i + 1], arr[j]);
+            i++;
+        }
+    }
+
+    swap(arr[i + 1], arr[high]);
+    return (i + 1);
+}
+
+void quickSort(Student arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+void searchBySGPA(Student arr[], int n, float targetSGPA) {
+    int found = 0;
+
+    cout << "\nStudents with SGPA " << targetSGPA << ":\n";
+
+    for (int i = 0; i < n; i++) {
+        if (arr[i].sgpa == targetSGPA) {
+            cout << "Roll No: " << arr[i].rollNo << ", Name: " << arr[i].name << ", SGPA: " << arr[i].sgpa << endl;
+            found = 1;
+        }
+    }
+
+    if (!found) {
+        cout << "No students found with SGPA " << targetSGPA << endl;
+    } else {
+        cout << "\nOther students with the same SGPA:\n";
+        for (int i = 0; i < n; i++) {
+            if (arr[i].sgpa != targetSGPA) {
+                continue;
+            }
+
+            cout << "Roll No: " << arr[i].rollNo << ", Name: " << arr[i].name << ", SGPA: " << arr[i].sgpa << endl;
+        }
+    }
 }
