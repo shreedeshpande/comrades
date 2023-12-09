@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <algorithm> // Include the algorithm header for the swap function
 
 using namespace std;
 
@@ -57,7 +58,9 @@ int main() {
 
     // Initialize an array of student records
     Student students[numStudents] = {
-        {101, "John", 8.5},
+        {103, "Alice", 8.5},
+        {101, "Bob", 7.8},
+        {105, "Charlie", 9.2},
         // Add more records...
     };
 
@@ -79,4 +82,3 @@ int main() {
 
     return 0;
 }
-
