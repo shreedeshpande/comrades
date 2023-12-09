@@ -1,0 +1,7 @@
+/* 12 Implement binary search tree and perform following operations:
+a) Insert (Handle insertion of duplicate entry)
+b) Delete
+c) Search
+d) Display tree (Traversal)
+e) Display leaf nodes
+f) Display tree level wise */
