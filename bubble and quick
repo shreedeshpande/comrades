@@ -1,0 +1,82 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Define the structure for a student
+struct Student {
+    int rollNo;
+    string name;
+    float sgpa;
+};
+
+// Function to perform Bubble Sort on the student records based on roll numbers
+void bubbleSort(Student students[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (students[j].rollNo > students[j + 1].rollNo) {
+                // Swap the students if they are out of order
+                swap(students[j], students[j + 1]);
+            }
+        }
+    }
+}
+
+// Function to perform Quick Sort on the student records based on SGPA
+void quickSort(Student students[], int low, int high) {
+    if (low < high) {
+        // Partition the array and get the pivot index
+        int pivotIndex = partition(students, low, high);
+
+        // Recursively sort the subarrays
+        quickSort(students, low, pivotIndex - 1);
+        quickSort(students, pivotIndex + 1, high);
+    }
+}
+
+// Function to partition the array for Quick Sort
+int partition(Student students[], int low, int high) {
+    float pivot = students[high].sgpa;
+    int i = low - 1;
+
+    for (int j = low; j < high; j++) {
+        if (students[j].sgpa >= pivot) {
+            i++;
+            // Swap the students if they are out of order
+            swap(students[i], students[j]);
+        }
+    }
+
+    // Swap the pivot element with the element at (i + 1)
+    swap(students[i + 1], students[high]);
+    return i + 1;
+}
+
+int main() {
+    const int numStudents = 15;
+
+    // Initialize an array of student records
+    Student students[numStudents] = {
+        {101, "John", 8.5},
+        // Add more records...
+    };
+
+    // Part (a): Sort the students based on roll numbers using Bubble Sort
+    bubbleSort(students, numStudents);
+
+    cout << "Roll Call List (Sorted by Roll Numbers):\n";
+    for (int i = 0; i < numStudents; i++) {
+        cout << "Roll No: " << students[i].rollNo << ", Name: " << students[i].name << ", SGPA: " << students[i].sgpa << endl;
+    }
+
+    // Part (b): Sort the students based on SGPA using Quick Sort
+    quickSort(students, 0, numStudents - 1);
+
+    cout << "\nTop Ten Toppers:\n";
+    for (int i = 0; i < min(10, numStudents); i++) {
+        cout << "Roll No: " << students[i].rollNo << ", Name: " << students[i].name << ", SGPA: " << students[i].sgpa << endl;
+    }
+
+    return 0;
+}
+
