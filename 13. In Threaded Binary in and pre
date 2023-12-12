@@ -1,134 +1,197 @@
 /* 13 Implement In-order Threaded Binary Tree and traverse it in In-order and Pre-order.*/
-#include <iostream>
-#include <stack>
-
+#include<iostream>
 using namespace std;
-
-class ThreadedTreeNode {
-public:
-    int data;
-    ThreadedTreeNode* left;
-    ThreadedTreeNode* right;
-    bool isThreaded;
-
-    ThreadedTreeNode(int value) : data(value), left(nullptr), right(nullptr), isThreaded(false) {}
+class node
+{
+    public:
+        int data;
+        int lth,rth;
+        node *left,*right; 
+};
+class thread
+{
+    private:
+    node *dummy;
+    node *New,*root,*temp,*parent;
+    public:
+    thread();
+    void create();
+    void insert(node *,node *);
+    void display();
+    void find();
+    void delet();
+    void del(node *root,node *dummy,int key);
 };
 
-class ThreadedBinaryTree {
-private:
-    ThreadedTreeNode* root;
 
-    // Helper function to perform in-order threading
-    void inOrderThread(ThreadedTreeNode* node, ThreadedTreeNode*& prev) {
-        if (node == nullptr) {
-            return;
-        }
+thread::thread()
+{
+    root=NULL;
+    
+}
 
-        inOrderThread(node->left, prev);
 
-        if (node->left == nullptr) {
-            node->left = prev;
-            node->isThreaded = true;
-        }
-
-        if (prev != nullptr && prev->right == nullptr) {
-            prev->right = node;
-            prev->isThreaded = true;
-        }
-
-        prev = node;
-
-        inOrderThread(node->right, prev);
+void thread::create()
+{
+    New=new node;
+    New->left=NULL;
+    New->right=NULL;
+    New->lth=0;
+    New->rth=0;
+    cout<<"\n Enter The Element: ";
+    cin>>New->data;
+    if(root==NULL)
+    {
+        root=New;
+        dummy=new node;
+        dummy->data=-999;
+        dummy->left=root;
+        root->left=dummy;
+        root->right=dummy;
     }
+    else
+    insert(root,New);
+}
 
-    // Helper function to perform in-order traversal using threading
-    void inOrderTraversalThreaded() {
-        ThreadedTreeNode* current = root;
 
-        while (current != nullptr) {
-            while (current->left != nullptr && !current->isThreaded) {
-                current = current->left;
-            }
+void thread::insert(node *root,node *New)
+{
+    if(New->data<root->data)
+    {
+        if(root->lth==0)
+        {
+            New->left=root->left;
+            New->right=root;
+            root->left=New;
+            root->lth=1;
+        }
+        else
+            insert(root->left,New);
+            
+    }
+    if(New->data>root->data)
+    {
+        if(root->rth==0)
+        {
+            New->right=root->right;
+            New->left=root;
+            root->rth=1;
+            root->right=New;
+        }
+        else
+        insert(root->right,New);
+        
+    }
+}
 
-            cout << current->data << " ";
 
-            if (current->isThreaded) {
-                current = current->right;
-            } else {
-                current = current->right;
-                while (current != nullptr && !current->isThreaded) {
-                    current = current->left;
+void thread::display()
+{
+    void inorder(node*,node *dummy);
+    void preorder(node*,node *dummy);
+    if(root==NULL)
+        cout<<"Tree is not created.";
+    else
+        {
+            cout<<"\nInorder Traversal: ";
+            inorder(root,dummy);
+            cout<<"\nPreorder Traversal: ";
+            preorder(root,dummy);
+            
+        }
+        
+}
+
+
+void inorder(node *temp,node *dummy)
+{
+    while(temp!=dummy)
+    {
+        while(temp->lth==1)
+        temp=temp->left;
+    cout<<" "<<temp->data;
+    while(temp->rth==0)
+    {
+        temp=temp->right;
+        if(temp==dummy)
+        return;
+        cout<<" "<<temp->data;
+        
+    }
+    temp=temp->right;
+    
+    }
+}
+
+
+void preorder(node *temp,node *dummy)
+{
+    int flag=0;
+    while(temp!=dummy)
+    {
+        if(flag==0)
+        cout<<" "<<temp->data;
+        if((temp->lth==1)&&(flag==0))
+        {
+            temp=temp->left;
+            
+        }
+        else
+        {
+            while(1)
+            {
+                if(temp->rth==1)
+                {
+                    flag=0;
+                    temp=temp->right;
+                    break;
+                    
                 }
-            }
-        }
-    }
-
-    // Helper function to perform pre-order traversal using threading
-    void preOrderTraversalThreaded() {
-        ThreadedTreeNode* current = root;
-
-        while (current != nullptr) {
-            cout << current->data << " ";
-
-            if (current->left != nullptr && !current->isThreaded) {
-                current = current->left;
-            } else {
-                if (current->isThreaded) {
-                    current = current->right;
-                } else {
-                    current = current->right;
-                    while (current != nullptr && !current->isThreaded) {
-                        cout << current->data << " ";
-                        current = current->left;
+                else
+                {
+                    if(temp!=dummy)
+                    {
+                        flag=1;
+                        temp=temp->right;
+                        break;
+                        
                     }
                 }
             }
         }
     }
+}
 
-public:
-    ThreadedBinaryTree() : root(nullptr) {}
 
-    // Function to build the threaded binary tree
-    void buildThreadedTree(ThreadedTreeNode* providedRoot) {
-        ThreadedTreeNode* prev = nullptr;
-        root = providedRoot;
-        inOrderThread(root, prev);
-    }
 
-    // Function to display in-order threaded traversal
-    void displayInOrderThreaded() {
-        cout << "In-order Threaded Traversal: ";
-        inOrderTraversalThreaded();
-        cout << endl;
-    }
-
-    // Function to display pre-order threaded traversal
-    void displayPreOrderThreaded() {
-        cout << "Pre-order Threaded Traversal: ";
-        preOrderTraversalThreaded();
-        cout << endl;
-    }
-};
-
-int main() {
-    ThreadedBinaryTree threadedTree;
-
-    // Creating a sample binary tree
-    ThreadedTreeNode* root = new ThreadedTreeNode(1);
-    root->left = new ThreadedTreeNode(2);
-    root->right = new ThreadedTreeNode(3);
-    root->left->left = new ThreadedTreeNode(4);
-    root->left->right = new ThreadedTreeNode(5);
-    root->right->left = new ThreadedTreeNode(6);
-    root->right->right = new ThreadedTreeNode(7);
-
-    // Initialize the root of ThreadedBinaryTree with the provided root
-    threadedTree.buildThreadedTree(root);
-
-    // Displaying threaded traversals
-    threadedTree.displayInOrderThreaded();
-    threadedTree.displayPreOrderThreaded();
-
+int main()
+{
+    int choice;
+    char ans='N';
+    thread th;
+    do
+    {
+        cout<<"\nProgram For Threaded Binary Tree\n";
+        cout<<"\n1)Create \n2)Display";
+        cout<<"\nEnter Your Choice: ";
+        cin>>choice;
+        switch(choice)
+        {
+            case 1:
+            do
+            {
+                th.create();
+                cout<<"\n Do u want to enter more elements?(y/n): ";
+                cin>>ans;
+            }while(ans=='y');
+            break;
+            case 2:th.display();
+            break;
+        }
+        cout<<"\n\nWant To See Main Menu?(y/n): ";
+        cin>>ans;
+        
+    }while(ans=='y');
     return 0;
+    
 }
